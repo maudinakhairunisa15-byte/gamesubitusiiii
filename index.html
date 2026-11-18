@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Petualangan Substitusi bersama Kak Eli</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap">
+<style>
+:root{--bg:#e4f4ee;--ink:#14332d;--paper:#fff;--board:#1d4a43;--chalk:#f6f3e8;--yel:#ffd84d;--pink:#ff8fab;--ok:#6fe3a1;--bad:#ff7b7b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f2420;--ink:#e4f4ee;--paper:#183a34}}
+:root[data-theme="dark"]{--bg:#0f2420;--ink:#e4f4ee;--paper:#183a34}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Patrick Hand','Comic Sans MS',cursive,sans-serif;font-size:19px;min-height:100vh;overflow-x:hidden}
+.bg span{position:fixed;font-size:64px;opacity:.09;animation:fl 14s linear infinite;pointer-events:none}
+@keyframes fl{from{transform:translateY(105vh) rotate(0)}to{transform:translateY(-20vh) rotate(360deg)}}
+.app{max-width:980px;margin:0 auto;padding:14px;position:relative}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+h1{margin:0;font-size:clamp(22px,4.5vw,34px)}
+.score{background:var(--yel);color:#14332d;padding:6px 16px;border-radius:30px;font-size:22px}
+#tabs{display:flex;gap:8px;margin:12px 0;overflow-x:auto;padding-bottom:4px}
+.tab{font:inherit;border:2px solid var(--board);background:var(--paper);color:var(--ink);padding:6px 14px;border-radius:20px;cursor:pointer;white-space:nowrap}
+.tab.on{background:var(--board);color:var(--chalk)}
+main{display:grid;grid-template-columns:230px 1fr;gap:16px;align-items:start}
+.hero{display:flex;flex-direction:column;align-items:center}
+.bubble{background:var(--paper);border:3px solid var(--board);border-radius:20px;padding:10px 14px;position:relative;animation:pop .4s;min-height:64px}
+.bubble::after{content:'';position:absolute;bottom:-14px;left:50%;border:8px solid transparent;border-top:14px solid var(--board)}
+@keyframes pop{from{transform:scale(.85);opacity:0}}
+#ch{width:170px;overflow:visible;margin-top:14px}
+#ch .body,#ch .armL,#ch .armR{transform-box:view-box}
+#ch .armL{transform-origin:50px 100px}#ch .armR{transform-origin:110px 100px}
+.m2,.m3{display:none}
+.idle .body{animation:bob 2.2s ease-in-out infinite}.idle .armR{animation:wv 1.6s ease-in-out infinite}
+.idle .eye{animation:bl 4s infinite;transform-origin:center;transform-box:fill-box}
+.happy .m1,.sad .m1{display:none}.happy .m2{display:block}.sad .m3{display:block}
+.happy .body{animation:jp .45s ease-in-out 4}.happy .armL{transform:rotate(155deg)}.happy .armR{transform:rotate(-155deg)}
+.sad .body{animation:shk .12s 8}.sad .armL{transform:rotate(-8deg)}.sad .armR{transform:rotate(8deg)}
+@keyframes bob{50%{transform:translateY(-6px)}}@keyframes wv{50%{transform:rotate(-35deg)}}
+@keyframes bl{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+@keyframes jp{50%{transform:translateY(-28px)}}@keyframes shk{50%{transform:translateX(7px)}}
+.card{background:var(--board);color:var(--chalk);border:8px solid #b98a5a;border-radius:18px;padding:18px;min-height:420px}
+.card.shake{animation:shk .1s 4}
+.prog{display:flex;gap:8px;margin-bottom:10px}
+.prog i{flex:1;height:10px;border-radius:6px;background:#ffffff2e}.prog i.dn{background:var(--ok)}.prog i.cur{outline:3px solid var(--yel)}
+.soal{background:#ffffff14;border:2px dashed var(--chalk);border-radius:14px;padding:8px 14px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.sys{font-size:26px;line-height:1.3;border-left:4px solid var(--pink);padding-left:12px}
+.soal small{opacity:.8}
+h2{margin:14px 0 4px;color:var(--yel);font-size:26px}
+p{margin:6px 0}
+.eq{font-size:30px;margin:4px 0}
+.hl{background:#ffd84d38;border-radius:8px;padding:0 .2em;display:inline-block;position:relative}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0}
+input{font:inherit;font-size:28px;width:84px;text-align:center;border-radius:12px;border:3px solid var(--yel);background:var(--chalk);color:#14332d;padding:2px}
+.btn,.ch,.nb{font:inherit;font-size:21px;border:0;border-radius:14px;padding:8px 20px;cursor:pointer;background:var(--yel);color:#14332d;box-shadow:0 4px 0 #b9962a;transition:transform .1s}
+.btn:active,.ch:active,.nb:active{transform:translateY(3px);box-shadow:0 1px 0 #b9962a}
+.ch{background:var(--chalk);box-shadow:0 4px 0 #9a9686}.ch.ok{background:var(--ok);box-shadow:0 4px 0 #3fa56d}
+.chs{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+.new,.stack{background:#ffffff14;border-radius:12px;padding:6px 14px;margin:8px 0}
+.stack.done .hl{opacity:.4;text-decoration:line-through;animation:poof 1s}
+.stack.done .hl::after{content:'✨';position:absolute;right:-6px;top:-14px;animation:sp 1s forwards}
+@keyframes poof{35%{transform:scale(1.6) rotate(-8deg);background:var(--yel);opacity:1}}
+@keyframes sp{from{transform:scale(0)}50%{transform:scale(1.8)}to{transform:scale(1);opacity:0}}
+.line{border-top:3px solid var(--chalk);margin-top:6px;padding-top:2px;font-size:28px;animation:sl .5s}
+.res{color:var(--ok);animation:sl .7s .3s both}
+@keyframes sl{from{transform:translateX(-30px);opacity:0}}
+.note{color:var(--pink)}#fb{min-height:28px;margin-top:8px;font-size:21px}
+.win{text-align:center;font-size:56px;animation:pop .6s}.win h3{margin:0;font-size:38px;color:var(--ok)}.win p{font-size:22px;color:var(--chalk)}
+.chk{background:#ffffff14;border-radius:10px;padding:6px 12px;margin:6px 0;animation:sl .6s both}
+footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px}
+.nb:disabled{opacity:.35;cursor:not-allowed}
+.cf{position:fixed;top:-20px;width:10px;height:14px;z-index:9;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@media (max-width:760px){main{grid-template-columns:1fr}.hero{flex-direction:row;gap:10px;align-items:center}.hero .bubble{flex:1;order:2}.hero .bubble::after{display:none}#ch{width:90px;margin:0}.card{min-height:0}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div class="app">
+<header><h1>🧮 Petualangan Substitusi</h1><div class="score">⭐ <b id="sc">0</b></div></header>
+<nav id="tabs"></nav>
+<main>
+<aside class="hero">
+<div class="bubble" id="bub"></div>
+<svg id="ch" class="idle" viewBox="0 0 160 220" aria-label="Kak Eli, guru matematika">
+<ellipse cx="80" cy="212" rx="42" ry="6" fill="#0003"/>
+<g class="body">
+<rect x="62" y="148" width="15" height="54" rx="7" fill="#34457a"/><rect x="83" y="148" width="15" height="54" rx="7" fill="#34457a"/>
+<rect x="56" y="198" width="24" height="10" rx="5" fill="#222"/><rect x="80" y="198" width="24" height="10" rx="5" fill="#222"/>
+<g class="armL"><rect x="34" y="98" width="17" height="52" rx="8" fill="#ff7a59"/><circle cx="43" cy="152" r="9" fill="#ffd2a8"/></g>
+<g class="armR"><rect x="109" y="98" width="17" height="52" rx="8" fill="#ff7a59"/><circle cx="117" cy="152" r="9" fill="#ffd2a8"/></g>
+<rect x="50" y="92" width="60" height="64" rx="18" fill="#ff7a59"/>
+<path d="M72 92 L80 108 L88 92Z" fill="#fff"/>
+<circle cx="80" cy="60" r="34" fill="#ffd2a8"/>
+<path d="M45 58 Q44 20 80 22 Q116 20 115 58 Q100 40 80 42 Q60 40 45 58Z" fill="#2b2140"/>
+<ellipse class="eye" cx="67" cy="62" rx="4" ry="5.5" fill="#222"/><ellipse class="eye" cx="93" cy="62" rx="4" ry="5.5" fill="#222"/>
+<circle cx="57" cy="73" r="5" fill="#ff9aa8" opacity=".7"/><circle cx="103" cy="73" r="5" fill="#ff9aa8" opacity=".7"/>
+<path class="m1" d="M68 74 Q80 86 92 74" stroke="#a3362b" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path class="m2" d="M66 72 Q80 94 94 72Z" fill="#c0392b"/>
+<path class="m3" d="M68 82 Q80 70 92 82" stroke="#a3362b" stroke-width="3" fill="none" stroke-linecap="round"/>
+</g></svg>
+</aside>
+<section class="card" id="card">
+<div class="prog" id="prog"></div>
+<div id="soal"></div>
+<h2 id="ttl"></h2>
+<div id="body"></div>
+<div id="fb"></div>
+</section>
+</main>
+<footer><button class="nb" id="prev" onclick="nav(-1)">◀ Sebelumnya</button><span id="pg"></span><button class="nb" id="next" onclick="nav(1)">Selanjutnya ▶</button></footer>
+</div>
+<script>
+const P=[[[2,3,13],[3,2,12]],[[3,4,24],[5,2,26]],[[4,3,26],[3,5,25]],[[3,-2,6],[2,3,17]]];
+const V=['x','y'],N=7,$=i=>document.getElementById(i);
+const TT=['Pilih variabel yang dieliminasi','Samakan koefisien','Eliminasi: kurangkan atau jumlahkan','Tulis hasil eliminasi','Cari nilai variabel pertama','Substitusi ke persamaan','Hasil akhir'];
+const MSG=['Halo, aku Kak Eli! 👋 Pilih dulu variabel mana yang mau kita hilangkan.','Samakan dulu koefisien variabel yang dieliminasi. Kalikan persamaannya!','Koefisien sudah sama. Tanda sama → kurangkan, tanda beda → jumlahkan.','Suku itu sudah hilang! Sekarang tulis sendiri hasil operasinya.','Tinggal satu variabel. Ayo hitung nilainya!','Sekarang masukkan nilai tadi untuk mencari variabel satunya.','Hebat! Kamu menemukan penyelesaiannya! 🎉'];
+let pi=0,sc=0,mt;const S=P.map(()=>({s:0,d:[],w:[],e:null,k:[1,1]}));
+const fc=n=>n==1?'':n==-1?'−':n<0?'−'+(-n):n;
+const eqH=(q,h)=>`<span class="${h=='x'?'hl':''}">${fc(q[0])}x</span> ${q[1]<0?'−':'+'} <span class="${h=='y'?'hl':''}">${Math.abs(q[1])==1?'':Math.abs(q[1])}y</span> = ${q[2]}`;
+function I(){const p=P[pi],st=S[pi],e=st.e,ie=V.indexOf(e),io=1-ie,[k0,k1]=st.k,a0=p[0].map(n=>n*k0),b0=p[1].map(n=>n*k1),sub=Math.sign(a0[ie])==Math.sign(b0[ie]),sw=sub&&a0[io]<b0[io],a=sw?b0:a0,b=sw?a0:b0,r=a.map((n,i)=>sub?n-b[i]:n+b[i]),ov=r[2]/r[io];return{p,st,e,ie,io,a,b,sub,r,o:V[io],ov,ev:(p[0][2]-p[0][io]*ov)/p[0][ie]}}
+function say(t){const b=$('bub');b.textContent=t;b.style.animation='none';void b.offsetWidth;b.style.animation=''}
+function mood(m){const c=$('ch');c.setAttribute('class',m);clearTimeout(mt);if(m!='idle')mt=setTimeout(()=>c.setAttribute('class','idle'),2000)}
+function conf(){for(let i=0;i<50;i++){const d=document.createElement('i');d.className='cf';d.style.cssText=`left:${Math.random()*100}vw;background:hsl(${Math.random()*360} 90% 60%);animation-delay:${Math.random()*.6}s;animation-duration:${2+Math.random()*2}s`;document.body.appendChild(d);setTimeout(()=>d.remove(),4800)}}
+function resStep(i,st){const d=st.d[3];return `<p>Suku <b>${i.e}</b> sudah hilang ✨ Sekarang tulis sendiri hasil ${i.sub?'pengurangan':'penjumlahan'}nya:</p><div class="stack done"><div class="eq">${eqH(i.a,i.e)}</div><div class="eq">${eqH(i.b,i.e)}</div><div class="line">${i.sub?'−':'+'}</div><div class="row"><input type="number" id="a" value="${d?i.r[i.io]:''}" ${d?'disabled':''}><span class="eq">${i.o} =</span><input type="number" id="b" value="${d?i.r[2]:''}" ${d?'disabled':''}>${d?'<span style="color:var(--ok)">✔</span>':'<button class="btn" onclick="chkr()">Cek ✔</button>'}</div></div>`}
+function render(){
+const st=S[pi],p=P[pi],t=st.s,i=st.e?I():null;let b='';
+$('sc').textContent=sc;
+$('tabs').innerHTML=P.map((_,j)=>`<button class="tab ${j==pi?'on':''}" onclick="go(${j})">Soal ${j+1}${S[j].d[6]?' ✅':''}</button>`).join('');
+$('prog').innerHTML=Array.from({length:N},(_,j)=>`<i class="${st.d[j]?'dn':''} ${j==t?'cur':''}"></i>`).join('');
+$('soal').innerHTML=`<div class="soal"><b>Soal ${pi+1}</b><div class="sys">${eqH(p[0],st.e)}<br>${eqH(p[1],st.e)}</div><small>Tentukan nilai x dan y dengan metode substitusi</small></div>`;
+$('ttl').textContent=`Langkah ${t+1}: ${TT[t]}`;
+const inp=(f,v)=>`<input type="number" id="v" value="${st.d[t]?v:''}" ${st.d[t]?'disabled':''}>`+(st.d[t]?'<span style="color:var(--ok)">✔</span>':`<button class="btn" onclick="${f}()">Cek ✔</button>`);
+if(t==0)b=`<p>Variabel mana yang ingin kamu <b>hilangkan</b> lebih dulu?</p><div class="chs">${V.map(v=>`<button class="ch ${st.e==v?'ok':''}" onclick="pick('${v}')">Eliminasi <b>${v}</b></button>`).join('')}</div><p class="note">${st.e?`Oke! Kita hilangkan ${st.e} dulu, jadi yang ketemu duluan adalah ${V[1-V.indexOf(st.e)]}. Klik Selanjutnya ▶`:'Dua-duanya boleh! Pilih yang menurutmu lebih mudah 😉'}</p>`;
+else if(!i)b='<p class="note">Kembali ke Langkah 1 dulu, ya.</p>';
+else if(t==1)b=`<p>Kalikan tiap persamaan supaya koefisien <b>${i.e}</b> sama (nilai mutlaknya). Petunjuk: cari KPK dari ${Math.abs(p[0][i.ie])} dan ${Math.abs(p[1][i.ie])}.</p>`+[0,1].map(j=>`<div class="row"><span class="eq">${eqH(p[j],i.e)}</span><span class="eq">×</span><input type="number" min="1" id="k${j}" value="${st.d[1]?st.k[j]:''}" ${st.d[1]?'disabled':''}></div>`).join('')+(st.d[1]?`<div class="new"><p>Hasilnya:</p><div class="eq">${eqH(i.a,i.e)}</div><div class="eq">${eqH(i.b,i.e)}</div></div>`:`<button class="btn" onclick="chk1()">Cek ✔</button>`);
+else if(t==2)b=`<p>Koefisien ${i.e} sudah sama. Operasi apa yang tepat untuk menghilangkannya?</p><div class="stack ${st.d[2]?'done':''}"><div class="eq">${eqH(i.a,i.e)}</div><div class="eq">${eqH(i.b,i.e)}</div>${st.d[2]?`<div class="line">${i.sub?'−':'+'}</div>`:''}${st.d[3]?`<div class="eq res">${fc(i.r[i.io])}${i.o} = ${i.r[2]}</div>`:''}</div><div class="chs"><button class="ch ${st.d[2]&&i.sub?'ok':''}" ${st.d[2]?'disabled':''} onclick="op(true)">Kurangkan (−)</button><button class="ch ${st.d[2]&&!i.sub?'ok':''}" ${st.d[2]?'disabled':''} onclick="op(false)">Jumlahkan (+)</button></div>`;
+else if(t==3)b=resStep(i,st);
+else if(t==4)b=`<p>Dari <span class="eq">${fc(i.r[i.io])}${i.o} = ${i.r[2]}</span>, berapakah nilai <b>${i.o}</b>?</p><div class="row"><span class="eq">${i.o} =</span>${inp('chkv',i.ov)}</div>`;
+else if(t==5){const q=p[0],c=j=>{const a=Math.abs(q[j]);return j==i.io?`${a}(${i.ov})`:(a==1?'':a)+V[j]};b=`<p>Masukkan <b>${i.o} = ${i.ov}</b> ke persamaan 1:</p><div class="eq">${q[0]<0?'−':''}${c(0)} ${q[1]<0?'−':'+'} ${c(1)} = ${q[2]}</div><div class="row"><span class="eq">${i.e} =</span>${inp('chkv',i.ev)}</div>`}
+else{const X=i.ie?i.ov:i.ev,Y=i.ie?i.ev:i.ov;b=`<div class="win">🎉<h3>x = ${X} &nbsp; y = ${Y}</h3><p>Himpunan penyelesaian: {(${X}, ${Y})}</p></div>`+p.map((q,j)=>`<div class="chk" style="animation-delay:${j*.4}s">Cek persamaan ${j+1}: ${q[0]}(${X}) ${q[1]<0?'−':'+'} ${Math.abs(q[1])}(${Y}) = ${q[0]*X+q[1]*Y} ✔</div>`).join('')}
+$('body').innerHTML=b;$('fb').textContent='';
+$('pg').textContent=`Langkah ${t+1} dari ${N}`;
+$('prev').disabled=pi==0&&t==0;$('next').disabled=!st.d[t];
+$('next').textContent=t==N-1?(pi==P.length-1?'🏆 Selesai':'Soal berikutnya ▶'):'Selanjutnya ▶';
+}
+function ok(m){const st=S[pi],t=st.s,f=!st.d[t];st.d[t]=true;if(f)sc+=st.w[t]?5:10;render();$('fb').textContent='✅ '+m;say(m);mood('happy')}
+function bad(m){const st=S[pi];st.w[st.s]=1;say(m);mood('sad');$('fb').textContent='❌ '+m;const c=$('card');c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake')}
+function pick(v){const st=S[pi];if(st.e!=v){st.d=[];st.w=[];st.k=[1,1];st.e=v}ok(`Pilihan bagus! Kita eliminasi ${v}.`)}
+function chk1(){const i=I(),k=[+$('k0').value,+$('k1').value];k.every(n=>Number.isInteger(n)&&n>0)&&Math.abs(i.p[0][i.ie]*k[0])==Math.abs(i.p[1][i.ie]*k[1])?(S[pi].k=k,ok('Koefisien sudah sama!')):bad('Belum sama. Koefisien variabel yang dieliminasi harus bernilai sama setelah dikali.')}
+function op(s){const i=I();s==i.sub?ok(`Tepat! Variabel ${i.e} lenyap! ✨`):bad(i.sub?'Tanda koefisiennya sama, jadi harus dikurangkan.':'Tanda koefisiennya berbeda, jadi harus dijumlahkan.')}
+function chkv(){const i=I(),t=S[pi].s,v=$('v').value;v!==''&&+v==(t==4?i.ov:i.ev)?ok(`Benar! ${t==3?i.o:i.e} = ${v}`):bad('Belum tepat. Hitung lagi pelan-pelan ya!')}
+function chkr(){const i=I(),a=$('a').value,b=$('b').value;a!==''&&b!==''&&+a==i.r[i.io]&&+b==i.r[2]?ok(`Benar! ${fc(i.r[i.io])}${i.o} = ${i.r[2]}`):bad(`Belum tepat. Hitung koefisien ${i.o} dan angka di kanan dengan ${i.sub?'dikurangkan':'dijumlahkan'}, ya!`)}
+function enter(){const st=S[pi];if(st.s==6&&!st.d[6]){st.d[6]=true;sc+=20;conf();mood('happy')}say(MSG[st.s]);render()}
+function go(j){pi=j;enter()}
+function nav(d){const st=S[pi];if(d>0){if(st.s<N-1)st.s++;else if(pi<P.length-1)pi++;else{say(`🏆 Semua soal selesai! Skor kamu ${sc}. Keren banget!`);mood('happy');conf();return}}else{if(st.s>0)st.s--;else if(pi>0)pi--}enter()}
+$('bg').innerHTML=['x','y','+','−','=','2','3','÷'].map((s,j)=>`<span style="left:${j*13}vw;animation-delay:${-j*2}s">${s}</span>`).join('');
+enter();
+</script>
+</body>
+</html>
